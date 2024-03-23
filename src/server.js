@@ -1,13 +1,22 @@
 require('dotenv/config')
 require('express-async-errors')
 
+const cors = require('cors')
 const express = require('express')
+const cookieParser = require('cookie-parser')
 
 const AppError = require('./utils/AppError')
 const routes = require('./routes')
 
 const app = express()
 
+app.use(cookieParser())
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+)
 app.use(express.json())
 
 app.use(routes)

@@ -15,13 +15,13 @@ class UserController {
 
   async updatedUser(req, res) {
     const { name, email, password, old_password, role } = req.body
-    const { id } = req.params
+    const user_id = req.user.id
 
     const userRepository = new UserRepository()
     const userService = new UserService(userRepository)
 
     await userService.updatedUser({
-      id,
+      id: user_id,
       name,
       email,
       password,
