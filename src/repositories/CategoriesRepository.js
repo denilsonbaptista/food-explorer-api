@@ -10,6 +10,12 @@ class CategoriesRepository {
 
     return
   }
+
+  async updatedCategory({ food_id, name }) {
+    await knex('categories').where('food_id', food_id).update({ name })
+
+    return
+  }
 }
 
 module.exports = CategoriesRepository

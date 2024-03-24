@@ -7,6 +7,9 @@ const foodsRoutes = Router()
 
 const foodsController = new FoodsController()
 
-foodsRoutes.post('/', ensureAuthenticated, foodsController.createFood)
+foodsRoutes.use(ensureAuthenticated)
+
+foodsRoutes.post('/', foodsController.createFood)
+foodsRoutes.put('/:id', foodsController.updatedFood)
 
 module.exports = foodsRoutes

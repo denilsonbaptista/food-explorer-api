@@ -48,6 +48,50 @@ class FoodsService {
 
     return
   }
+
+  async updatedFood({
+    food_id,
+    user_id,
+    name,
+    price,
+    description,
+    image_url,
+    categories,
+    ingredients,
+  }) {
+    const food = await this.foodsRepository.findFoodByName(name)
+
+    if (food && food.id != food_id) {
+      throw new AppError('Food already exists', 400)
+    }
+
+    await this.foodsRepository.updatedFood({
+      food_id,
+      name,
+      price,
+      description,
+      image_url,
+    })
+
+    await this.categoriesRepository.updatedCategory({
+      food_id,
+      name: categories,
+    })
+
+    await this.ingredientsRepository.deleteByFoodId(food_id)
+
+    const ingredientsInsert = ingredients.map(ingredient => {
+      return {
+        food_id,
+        user_id,
+        name: ingredient,
+      }
+    })
+
+    await this.ingredientsRepository.createIngredients(ingredientsInsert)
+
+    return
+  }
 }
 
 module.exports = FoodsService

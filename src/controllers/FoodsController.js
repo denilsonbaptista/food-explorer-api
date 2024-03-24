@@ -30,6 +30,35 @@ class FoodsController {
 
     return res.status(201).json()
   }
+
+  async updatedFood(req, res) {
+    const { name, price, description, image_url, categories, ingredients } =
+      req.body
+    const { id } = req.params
+    const user_id = req.user.id
+
+    const foodsRepository = new FoodsRepository()
+    const categoriesRepository = new CategoriesRepository()
+    const ingredientsRepository = new IngredientsRepository()
+    const foodsService = new FoodsService(
+      foodsRepository,
+      categoriesRepository,
+      ingredientsRepository,
+    )
+
+    await foodsService.updatedFood({
+      food_id: id,
+      user_id,
+      name,
+      price,
+      description,
+      image_url,
+      categories,
+      ingredients,
+    })
+
+    return res.status(200).json()
+  }
 }
 
 module.exports = FoodsController

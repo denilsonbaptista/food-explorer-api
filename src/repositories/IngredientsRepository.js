@@ -6,6 +6,18 @@ class IngredientsRepository {
 
     return
   }
+
+  async findByFoodId(food_id) {
+    const ingredients = await knex('ingredients').where('food_id', food_id)
+
+    return ingredients
+  }
+
+  async deleteByFoodId(food_id) {
+    await knex('ingredients').where('food_id', food_id).del()
+
+    return
+  }
 }
 
 module.exports = IngredientsRepository

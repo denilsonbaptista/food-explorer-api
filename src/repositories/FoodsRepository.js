@@ -13,6 +13,17 @@ class FoodsRepository {
     return food_id
   }
 
+  async updatedFood({ food_id: id, name, price, description, image_url }) {
+    await knex('foods').where('id', id).update({
+      name,
+      price,
+      description,
+      image_url,
+    })
+
+    return
+  }
+
   async findFoodByName(name) {
     const foodName = await knex('foods').where('name', name).first()
 
