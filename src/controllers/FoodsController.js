@@ -59,6 +59,28 @@ class FoodsController {
 
     return res.status(200).json()
   }
+
+  async viewFood(req, res) {
+    const { id } = req.params
+
+    const foodsRepository = new FoodsRepository()
+    const foodsService = new FoodsService(foodsRepository)
+
+    const food = await foodsService.viewFood(id)
+
+    return res.status(200).json(food)
+  }
+
+  async deleteFood(req, res) {
+    const { id } = req.params
+
+    const foodsRepository = new FoodsRepository()
+    const foodsService = new FoodsService(foodsRepository)
+
+    await foodsService.deleteFood({ food_id: id })
+
+    return res.status(200).json()
+  }
 }
 
 module.exports = FoodsController

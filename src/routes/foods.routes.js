@@ -11,5 +11,7 @@ foodsRoutes.use(ensureAuthenticated)
 
 foodsRoutes.post('/', foodsController.createFood)
 foodsRoutes.put('/:id', foodsController.updatedFood)
+foodsRoutes.get('/:id', foodsController.viewFood)
+foodsRoutes.delete('/:id', foodsController.deleteFood)
 
 module.exports = foodsRoutes

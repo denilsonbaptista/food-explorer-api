@@ -92,6 +92,18 @@ class FoodsService {
 
     return
   }
+
+  async viewFood(food_id) {
+    const food = await this.foodsRepository.viewFood(food_id)
+
+    return food
+  }
+
+  async deleteFood({ food_id }) {
+    await this.foodsRepository.deleteFood({ food_id })
+
+    return
+  }
 }
 
 module.exports = FoodsService
