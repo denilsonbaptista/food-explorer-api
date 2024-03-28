@@ -2,6 +2,7 @@ const FoodsService = require('../services/FoodsService')
 const FoodsRepository = require('../repositories/FoodsRepository')
 const CategoriesRepository = require('../repositories/CategoriesRepository')
 const IngredientsRepository = require('../repositories/IngredientsRepository')
+const SearchFoodRepository = require('../repositories/SearchFoodRepository')
 
 class FoodsController {
   async createFood(req, res) {
@@ -85,7 +86,17 @@ class FoodsController {
   async indexFood(req, res) {
     const { title } = req.query
 
-    const foodsService = new FoodsService()
+    const searchFoodRepository = new SearchFoodRepository()
+    const foodsRepository = new FoodsRepository()
+    const categoriesRepository = new CategoriesRepository()
+    const ingredientsRepository = new IngredientsRepository()
+
+    const foodsService = new FoodsService(
+      foodsRepository,
+      categoriesRepository,
+      ingredientsRepository,
+      searchFoodRepository,
+    )
 
     const searchFood = await foodsService.indexFood(title)
 
