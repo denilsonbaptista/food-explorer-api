@@ -81,6 +81,16 @@ class FoodsController {
 
     return res.status(200).json()
   }
+
+  async indexFood(req, res) {
+    const { title } = req.query
+
+    const foodsService = new FoodsService()
+
+    const searchFood = await foodsService.indexFood(title)
+
+    return res.status(200).json(searchFood)
+  }
 }
 
 module.exports = FoodsController

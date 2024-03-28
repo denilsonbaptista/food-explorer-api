@@ -1,5 +1,7 @@
 const AppError = require('../utils/AppError')
 
+const knex = require('../database/knex')
+
 class FoodsService {
   constructor(foodsRepository, categoriesRepository, ingredientsRepository) {
     this.foodsRepository = foodsRepository
@@ -103,6 +105,49 @@ class FoodsService {
     await this.foodsRepository.deleteFood({ food_id })
 
     return
+  }
+
+  async indexFood(title) {
+    const foodName = await knex('foods').where('name', 'like', `%${title}%`)
+
+    const foodIngredients = await knex('ingredients').where(
+      'name',
+      'like',
+      `%${title}%`,
+    )
+
+    let food
+
+    if (foodName && foodName.length > 0) {
+      food = await knex('foods')
+        .where('name', 'like', `%${title}%`)
+        .orderBy('name')
+    } else if (foodIngredients && foodIngredients.length > 0) {
+      food = await knex('foods')
+        .select(['foods.*'])
+        .innerJoin('ingredients', 'foods.id', 'ingredients.food_id')
+        .where('ingredients.name', 'like', `%${title}%`)
+        .groupBy('foods.id')
+        .orderBy('foods.name')
+    } else {
+      food = []
+    }
+
+    const foodIds = food.map(food => food.id)
+
+    const ingredients = await knex('ingredients').whereIn('food_id', foodIds)
+    const foodWithIngredients = food.map(food => {
+      const foodIngredients = ingredients.filter(
+        ingredient => ingredient.food_id === food.id,
+      )
+
+      return {
+        ...food,
+        ingredients: foodIngredients,
+      }
+    })
+
+    return foodWithIngredients
   }
 }
 
