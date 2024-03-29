@@ -6,6 +6,7 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 
 const AppError = require('./utils/AppError')
+const uploadConfig = require('./configs/upload')
 const routes = require('./routes')
 
 const app = express()
@@ -18,6 +19,8 @@ app.use(
   }),
 )
 app.use(express.json())
+
+app.use('/files', express.static(uploadConfig.UPLOAD_FOLDER))
 
 app.use(routes)
 
