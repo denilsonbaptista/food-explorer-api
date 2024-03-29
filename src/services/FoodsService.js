@@ -120,9 +120,13 @@ class FoodsService {
 
     if (foodName && foodName.length > 0) {
       food = await this.searchFoodRepository.searchFoodName(title)
-    } else if (foodIngredients && foodIngredients.length > 0) {
+    }
+
+    if (foodIngredients && foodIngredients.length > 0) {
       food = await this.searchFoodRepository.searchFoodIngredients(title)
-    } else {
+    }
+
+    if (!food) {
       throw new AppError('No food found', 400)
     }
 
