@@ -28,7 +28,7 @@ app.use((error, request, response, next) => {
   if (error instanceof AppError) {
     return response.status(error.statusCode).json({
       status: 'error',
-      menssage: error.message,
+      message: error.message,
     })
   }
 
@@ -36,7 +36,7 @@ app.use((error, request, response, next) => {
 
   return response.status(500).json({
     status: 'error',
-    menssage: 'Internal server error',
+    message: 'Internal server error',
   })
 })
 
