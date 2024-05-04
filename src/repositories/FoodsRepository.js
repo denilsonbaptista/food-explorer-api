@@ -1,11 +1,12 @@
 const knex = require('../database/knex')
 
 class FoodsRepository {
-  async createFood({ name, price, description, user_id, image_url }) {
+  async createFood({ name, price, description, categories_id, user_id, image_url }) {
     const [food_id] = await knex('foods').insert({
       name,
       price,
       description,
+      categories_id,
       user_id,
       image_url,
     })
@@ -36,13 +37,9 @@ class FoodsRepository {
     const ingredients = await knex('ingredients').where('food_id', food_id)
 
     const foodWithCategoryAndIngredients = food.map(food => {
-      const foodCategory = category.filter(
-        category => category.food_id === food.id,
-      )
+      const foodCategory = category.filter(category => category.food_id === food.id)
 
-      const foodIngredients = ingredients.filter(
-        ingredients => ingredients.food_id === food.id,
-      )
+      const foodIngredients = ingredients.filter(ingredients => ingredients.food_id === food.id)
 
       return {
         ...food,

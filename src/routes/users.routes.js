@@ -11,10 +11,6 @@ const usersValidatedController = new UsersValidatedController()
 
 usersRoutes.post('/', userController.createUser)
 usersRoutes.put('/', ensureAuthenticated, userController.updatedUser)
-usersRoutes.get(
-  '/validated',
-  ensureAuthenticated,
-  usersValidatedController.index,
-)
+usersRoutes.get('/validated', ensureAuthenticated, usersValidatedController.index)
 
 module.exports = usersRoutes

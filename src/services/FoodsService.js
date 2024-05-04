@@ -1,45 +1,29 @@
 const AppError = require('../utils/AppError')
 
 class FoodsService {
-  constructor(
-    foodsRepository,
-    categoriesRepository,
-    ingredientsRepository,
-    searchFoodRepository,
-  ) {
+  constructor(foodsRepository, categoriesRepository, ingredientsRepository, searchFoodRepository) {
     this.foodsRepository = foodsRepository
     this.categoriesRepository = categoriesRepository
     this.ingredientsRepository = ingredientsRepository
     this.searchFoodRepository = searchFoodRepository
   }
 
-  async createFood({
-    name,
-    price,
-    description,
-    user_id,
-    image_url,
-    categories,
-    ingredients,
-  }) {
+  async createFood({ name, price, description, user_id, image_url, categories, ingredients }) {
     const foodName = await this.foodsRepository.findFoodByName(name)
 
     if (foodName) {
       throw new AppError('Food already exists', 400)
     }
 
+    const categories_id = await this.categoriesRepository.findCategories(categories)
+
     const food = await this.foodsRepository.createFood({
       name,
       price,
       description,
+      categories_id,
       user_id,
       image_url,
-    })
-
-    await this.categoriesRepository.createCategory({
-      food_id: food,
-      user_id,
-      name: categories,
     })
 
     const ingredientsInsert = ingredients.map(ingredient => {
@@ -55,16 +39,7 @@ class FoodsService {
     return
   }
 
-  async updatedFood({
-    food_id,
-    user_id,
-    name,
-    price,
-    description,
-    image_url,
-    categories,
-    ingredients,
-  }) {
+  async updatedFood({ food_id, user_id, name, price, description, image_url, categories, ingredients }) {
     const food = await this.foodsRepository.findFoodByName(name)
 
     if (food && food.id != food_id) {
@@ -112,41 +87,26 @@ class FoodsService {
   }
 
   async indexFood(title) {
-    const foodName = await this.searchFoodRepository.findFoodName(title)
-    const foodIngredients =
-      await this.searchFoodRepository.findFoodIngredientsName(title)
+    const categories = await this.searchFoodRepository.findByCategories()
+    const ingredients = await this.searchFoodRepository.findByIngredients()
 
-    let food
+    let foods = await this.searchFoodRepository.findByFoods(title)
 
-    if (foodName && foodName.length > 0) {
-      food = await this.searchFoodRepository.searchFoodName(title)
+    if (foods.length <= 0) {
+      foods = await this.searchFoodRepository.findByFoodsIngredients(title)
     }
 
-    if (foodIngredients && foodIngredients.length > 0) {
-      food = await this.searchFoodRepository.searchFoodIngredients(title)
-    }
+    const categorizedFoods = categories.map(category => ({
+      ...category,
+      foods: foods
+        .filter(food => food.categories_id === category.id)
+        .map(food => ({
+          ...food,
+          ingredients: ingredients.filter(ingredient => ingredient.food_id === food.id),
+        })),
+    }))
 
-    if (!food) {
-      throw new AppError('No food found', 400)
-    }
-
-    const foodIds = food.map(food => food.id)
-
-    const ingredients = await this.searchFoodRepository.findIngredientsFoodId(
-      foodIds,
-    )
-    const foodWithIngredients = food.map(food => {
-      const foodIngredients = ingredients.filter(
-        ingredient => ingredient.food_id === food.id,
-      )
-
-      return {
-        ...food,
-        ingredients: foodIngredients,
-      }
-    })
-
-    return foodWithIngredients
+    return categorizedFoods
   }
 }
 

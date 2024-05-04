@@ -1,20 +1,29 @@
 const knex = require('../database/knex')
 
 class CategoriesRepository {
-  async createCategory({ food_id, user_id, name }) {
-    await knex('categories').insert({
-      food_id,
+  async createCategory({ user_id, name }) {
+    const [category_id] = await knex('categories').insert({
       user_id,
       name,
     })
 
-    return
+    return category_id
   }
 
-  async updatedCategory({ food_id, name }) {
-    await knex('categories').where('food_id', food_id).update({ name })
+  // async updatedCategory({ id, food_id }) {
+  //   await knex('categories').where('id', id).update({ food_id })
 
-    return
+  //   return
+  // }
+
+  async findCategories(categories) {
+    const { id } = await knex('categories').where('name', categories).first()
+
+    return id
+  }
+
+  async searchCategories(title) {
+    return await knex('categories').where('name', 'like', `%${title}%`)
   }
 }
 

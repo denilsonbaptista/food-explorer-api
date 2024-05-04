@@ -2,8 +2,9 @@ exports.up = knex =>
   knex.schema.createTable('foods', table => {
     table.increments('id')
     table.text('name').notNullable()
-    table.float('price').notNullable()
+    table.text('price').notNullable()
     table.text('description').notNullable()
+    table.integer('categories_id').references('id').inTable('categories').onDelete('CASCADE')
     table.integer('user_id').references('id').inTable('users')
     table.text('image_url').notNullable()
 
