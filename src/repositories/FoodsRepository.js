@@ -32,23 +32,12 @@ class FoodsRepository {
   }
 
   async viewFood(food_id) {
-    const food = await knex('foods').where('foods.id', food_id)
-    const category = await knex('categories').where('food_id', food_id)
+    const food = await knex('foods').where('foods.id', food_id).first()
     const ingredients = await knex('ingredients').where('food_id', food_id)
 
-    const foodWithCategoryAndIngredients = food.map(food => {
-      const foodCategory = category.filter(category => category.food_id === food.id)
+    food.ingredients = ingredients
 
-      const foodIngredients = ingredients.filter(ingredients => ingredients.food_id === food.id)
-
-      return {
-        ...food,
-        category: foodCategory,
-        ingredients: foodIngredients,
-      }
-    })
-
-    return foodWithCategoryAndIngredients
+    return food
   }
 
   async deleteFood({ food_id: id }) {
