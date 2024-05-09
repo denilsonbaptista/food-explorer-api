@@ -18,9 +18,32 @@ foodsRoutes.use(ensureAuthenticated)
 
 foodsRoutes.get('/', foodsController.indexFood)
 foodsRoutes.get('/:id', foodsController.viewFood)
-foodsRoutes.post('/', verifyUserAuthorization('admin'), foodsController.createFood)
-foodsRoutes.put('/:id', verifyUserAuthorization('admin'), foodsController.updatedFood)
-foodsRoutes.delete('/:id', verifyUserAuthorization('admin'), foodsController.deleteFood)
-foodsRoutes.patch('/image', verifyUserAuthorization('admin'), upload.single('image'), foodsImagesController.update)
+foodsRoutes.post(
+  '/',
+  verifyUserAuthorization('admin'),
+  foodsController.createFood,
+)
+foodsRoutes.put(
+  '/:id',
+  verifyUserAuthorization('admin'),
+  foodsController.updatedFood,
+)
+foodsRoutes.delete(
+  '/:id',
+  verifyUserAuthorization('admin'),
+  foodsController.deleteFood,
+)
+foodsRoutes.patch(
+  '/image',
+  verifyUserAuthorization('admin'),
+  upload.single('image'),
+  foodsImagesController.create,
+)
+foodsRoutes.patch(
+  '/image/:id',
+  verifyUserAuthorization('admin'),
+  upload.single('image'),
+  foodsImagesController.update,
+)
 
 module.exports = foodsRoutes

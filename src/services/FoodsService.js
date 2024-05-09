@@ -1,21 +1,36 @@
 const AppError = require('../utils/AppError')
 
 class FoodsService {
-  constructor(foodsRepository, categoriesRepository, ingredientsRepository, searchFoodRepository) {
+  constructor(
+    foodsRepository,
+    categoriesRepository,
+    ingredientsRepository,
+    searchFoodRepository,
+  ) {
     this.foodsRepository = foodsRepository
     this.categoriesRepository = categoriesRepository
     this.ingredientsRepository = ingredientsRepository
     this.searchFoodRepository = searchFoodRepository
   }
 
-  async createFood({ name, price, description, user_id, image_url, categories, ingredients }) {
+  async createFood({
+    name,
+    price,
+    description,
+    user_id,
+    image_url,
+    categories,
+    ingredients,
+  }) {
     const foodName = await this.foodsRepository.findFoodByName(name)
 
     if (foodName) {
       throw new AppError('Food already exists', 400)
     }
 
-    const categories_id = await this.categoriesRepository.findCategories(categories)
+    const categories_id = await this.categoriesRepository.findCategories(
+      categories,
+    )
 
     const food = await this.foodsRepository.createFood({
       name,
@@ -39,24 +54,43 @@ class FoodsService {
     return
   }
 
-  async updatedFood({ food_id, user_id, name, price, description, image_url, categories, ingredients }) {
-    const food = await this.foodsRepository.findFoodByName(name)
+  async updatedFood({
+    food_id,
+    user_id,
+    name,
+    price,
+    description,
+    image_url,
+    categories,
+    ingredients,
+  }) {
+    if (
+      !food_id ||
+      !user_id ||
+      !name ||
+      !price ||
+      !description ||
+      !ingredients
+    ) {
+      throw new AppError('Missing required information', 400)
+    }
 
-    if (food && food.id != food_id) {
+    const existingFood = await this.foodsRepository.findFoodByName(name)
+    if (existingFood && existingFood.id != food_id) {
       throw new AppError('Food already exists', 400)
     }
+
+    const categories_id = await this.categoriesRepository.findCategories(
+      categories,
+    )
 
     await this.foodsRepository.updatedFood({
       food_id,
       name,
       price,
       description,
+      categories_id,
       image_url,
-    })
-
-    await this.categoriesRepository.updatedCategory({
-      food_id,
-      name: categories,
     })
 
     await this.ingredientsRepository.deleteByFoodId(food_id)
@@ -68,7 +102,6 @@ class FoodsService {
         name: ingredient,
       }
     })
-
     await this.ingredientsRepository.createIngredients(ingredientsInsert)
 
     return
@@ -102,7 +135,9 @@ class FoodsService {
         .filter(food => food.categories_id === category.id)
         .map(food => ({
           ...food,
-          ingredients: ingredients.filter(ingredient => ingredient.food_id === food.id),
+          ingredients: ingredients.filter(
+            ingredient => ingredient.food_id === food.id,
+          ),
         })),
     }))
 
