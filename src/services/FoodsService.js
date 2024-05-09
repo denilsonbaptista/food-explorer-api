@@ -1,4 +1,6 @@
 const AppError = require('../utils/AppError')
+const DiskStorage = require('../providers/DiskStorage')
+const knex = require('../database/knex')
 
 class FoodsService {
   constructor(
@@ -114,6 +116,12 @@ class FoodsService {
   }
 
   async deleteFood({ food_id }) {
+    const diskStorage = new DiskStorage()
+
+    const food = await knex('foods').where({ id: food_id }).first()
+
+    await diskStorage.deleteFile(food.image_url)
+
     await this.foodsRepository.deleteFood({ food_id })
 
     return
