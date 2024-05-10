@@ -14,7 +14,11 @@ const app = express()
 app.use(cookieParser())
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173/',
+      'https://ddfoodexplorer.netlify.app',
+    ],
     credentials: true,
   }),
 )
