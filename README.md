@@ -36,7 +36,7 @@ To run the project locally, simply run the command below:
 npm run dev
 ```
 
-This will automatically run a Web Service at the following address:
+This will automatically run the following API address:
 
 ```bash
 http://localhost:3000
